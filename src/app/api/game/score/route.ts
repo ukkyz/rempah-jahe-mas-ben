@@ -38,7 +38,7 @@ export async function POST(req: Request) {
           and(
             eq(pointHistory.userId, user.id),
             sql`${pointHistory.reason} like 'Bonus game%'`,
-            sql`${pointHistory.createdAt} >= date_trunc('day', now())`
+            sql`${pointHistory.createdAt} >= unixepoch('now', 'start of day')`
           )
         );
       if (Number(today?.c ?? 0) === 0) {

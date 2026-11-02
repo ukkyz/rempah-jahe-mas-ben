@@ -1,4 +1,4 @@
-import { db } from "@/db";
+import { db, ensureSchema } from "@/db";
 import { products, rewards, users } from "@/db/schema";
 import { hashPassword } from "@/lib/auth";
 import { eq } from "drizzle-orm";
@@ -31,6 +31,7 @@ let seeded = false;
 
 export async function ensureSeeded() {
   if (seeded) return;
+  await ensureSchema();
   try {
     const existing = await db.select({ id: products.id }).from(products).limit(1);
     if (existing.length === 0) {

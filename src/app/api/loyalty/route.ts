@@ -33,7 +33,7 @@ export async function GET() {
     const [oc] = await db
       .select({
         count: sql<number>`count(*) filter (where ${orders.status} <> 'batal')`,
-        distinct: sql<number>`count(distinct date_trunc('day', ${orders.createdAt}))`,
+        distinct: sql<number>`count(distinct date(${orders.createdAt}, 'unixepoch'))`,
       })
       .from(orders)
       .where(eq(orders.userId, user.id));

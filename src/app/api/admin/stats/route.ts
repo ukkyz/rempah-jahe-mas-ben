@@ -17,14 +17,14 @@ export async function GET() {
 
     const daily = await db
       .select({
-        day: sql<string>`to_char(date_trunc('day', ${transactions.createdAt}), 'YYYY-MM-DD')`,
+        day: sql<string>`strftime('%Y-%m-%d', ${transactions.createdAt}, 'unixepoch')`,
         income: sql<number>`coalesce(sum(case when ${transactions.type} = 'income' then ${transactions.amount} else 0 end), 0)`,
         expense: sql<number>`coalesce(sum(case when ${transactions.type} = 'expense' then ${transactions.amount} else 0 end), 0)`,
       })
       .from(transactions)
-      .where(sql`${transactions.createdAt} >= now() - interval '14 days'`)
-      .groupBy(sql`date_trunc('day', ${transactions.createdAt})`)
-      .orderBy(sql`date_trunc('day', ${transactions.createdAt})`);
+      .where(sql`${transactions.createdAt} >= unixepoch('now', '-14 days')`)
+      .groupBy(sql`date(${transactions.createdAt}, 'unixepoch')`)
+      .orderBy(sql`date(${transactions.createdAt}, 'unixepoch')`);
 
     const byCategory = await db
       .select({
